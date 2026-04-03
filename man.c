@@ -102,17 +102,15 @@ int yed_plugin_boot(yed_plugin *self) {
             RANGE("\""); SKIP("\\\\\""); ENDRANGE("\"");
         APOP();
 
-        /* Section headers with arguments: .SH/.SS base color, argument overridden */
+        /* Section headers: .TH, .SH, .SS as macro, first arg as fn-call */
         APUSH("&code-preprocessor");
-            RANGE("^\\.(SH|SS)[[:space:]]");
+            RANGE("^\\.(SH|SS|TH)[[:space:]]");
                 ONELINE();
                 APUSH("&code-fn-call");
-                    REGEXSUB("(.+)", 1);
+                    REGEXSUB("([^[:space:]]+)", 1);
                 APOP();
-            ENDRANGE("$");
+            ENDRANGE("[[:space:]]");
         APOP();
-
-        /* Section headers: .TH, .SH, .SS (without arguments) */
         APUSH("&code-preprocessor");
             REGEXSUB("^(\\.(TH|SH|SS))"WB, 1);
         APOP();
